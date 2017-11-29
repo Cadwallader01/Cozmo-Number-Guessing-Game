@@ -12,6 +12,7 @@
 #Cozmo behind the cubes facing the user with enough space to spin in a circle
 #Change directory for images to one that user's 'X' and checkmark png's are saved in
 
+
 import sys
 import time
 try:
@@ -20,76 +21,33 @@ except ImportError:
     sys.exit("Cannot import from PIL: Do `pip3 install --user Pillow` to install")
 
 import cozmo
+
+import cozmo
 from cozmo.util import degrees, distance_mm, speed_mmps
 from cozmo.objects import LightCube1Id, LightCube2Id, LightCube3Id
 
 #Displays a check mark for Cozmo when the answer answered is correct
 def rightAnswer(robot: cozmo.robot.Robot):
-    # load some images and convert them for display cozmo's face
-    image_settings = [("C:/Users/Cadwa/Desktop/Cozmo/cozmo_sdk_examples_1.1.0/face_images/check_rightAnswer.png", Image.BICUBIC)]
-    face_images = []
-
-    for image_name, resampling_mode in image_settings:
-        image = Image.open(image_name)
-
-        # resize to fit on Cozmo's face screen
-        resized_image = image.resize(cozmo.oled_face.dimensions(), resampling_mode)
-
-        # convert the image to the format used by the oled screen
-        face_image = cozmo.oled_face.convert_image_to_screen_data(resized_image,
-                                                                 invert_image=True)
-        face_images.append(face_image)
-
-    # display each image on Cozmo's face for duration_s seconds (Note: this
-    # is clamped at 30 seconds max within the engine to prevent burn-in)
-    # repeat this num_loops times
-
-    # display each image on Cozmo's face for duration_s seconds (Note: this
-    # is clamped at 30 seconds max within the engine to prevent burn-in)
-    # repeat this num_loops times
-
-    num_loops = 2
-    duration_s = 2.0
-    for _ in range(num_loops):
-        for image in face_images:
-            robot.display_oled_face_image(image, duration_s * 1000.0)
-
+    #CODE GIVEN
+    right_answer_image = Image.open("C:/Users/Cadwa/Desktop/Cozmo/cozmo_sdk_examples_1.1.0/face_images/check_rightAnswer.png")
+    right_answer_image = right_answer_image.resize(cozmo.oled_face.dimensions(), Image.BICUBIC)
+    right_answer_image = cozmo.oled_face.convert_image_to_screen_data(right_answer_image, invert_image=True)
+    #display image for 2 seconds
+    action = robot.display_oled_face_image(right_answer_image, 2000.0)
+    action.wait_for_completed()
 
 #Displays an X for Cozmo when the answer answered is wrong
 def wrongAnswer(robot: cozmo.robot.Robot):
-    # load some images and convert them for display cozmo's face
-    image_settings = [("C:/Users/Cadwa/Desktop/Cozmo/cozmo_sdk_examples_1.1.0/face_images/x_wrongAnswer.png", Image.BICUBIC)]
-    face_images = []
-
-    for image_name, resampling_mode in image_settings:
-        image = Image.open(image_name)
-
-        # resize to fit on Cozmo's face screen
-        resized_image = image.resize(cozmo.oled_face.dimensions(), resampling_mode)
-
-        # convert the image to the format used by the oled screen
-        face_image = cozmo.oled_face.convert_image_to_screen_data(resized_image,
-                                                                 invert_image=True)
-        face_images.append(face_image)
-
-    # display each image on Cozmo's face for duration_s seconds (Note: this
-    # is clamped at 30 seconds max within the engine to prevent burn-in)
-    # repeat this num_loops times
-
-    # display each image on Cozmo's face for duration_s seconds (Note: this
-    # is clamped at 30 seconds max within the engine to prevent burn-in)
-    # repeat this num_loops times
-
-    num_loops = 2
-    duration_s = 2.0
-
-    for _ in range(num_loops):
-        for image in face_images:
-            robot.display_oled_face_image(image, duration_s * 1000.0)
+    #CODE GIVEN
+    wrong_answer_image = Image.open("C:/Users/Cadwa/Desktop/Cozmo/cozmo_sdk_examples_1.1.0/face_images/x_wrongAnswer.png")
+    wrong_answer_image = wrong_answer_image.resize(cozmo.oled_face.dimensions(), Image.BICUBIC)
+    wrong_answer_image = cozmo.oled_face.convert_image_to_screen_data(wrong_answer_image, invert_image=True)
+    #display image for 2 seconds
+    action = robot.display_oled_face_image(wrong_answer_image, 1000.0)
+    action.wait_for_completed()
 
 def cozmo_program(robot: cozmo.robot.Robot):
     guess = 0
-
     #initialize Cozmo's head and lift positions
     lift_action = robot.set_lift_height(0.0, in_parallel=True)
     head_action = robot.set_head_angle(cozmo.robot.MAX_HEAD_ANGLE, in_parallel=True)
@@ -118,13 +76,14 @@ def cozmo_program(robot: cozmo.robot.Robot):
     #get a random number from 1-5
     from random import randint
     number = randint(1, 5)
+    print(number)
 
     #ask the user to try to guess the random number
-    robot.say_text("Hmm...I'm thinking of a number from 1 through 10. Can you guess it? I'll give you three tries: ").wait_for_completed()
+    robot.say_text("Number").wait_for_completed()
     userInput = input()
 
     #give user three tries to get the answer correct
-    while guess < 3:
+    while guess <= 3:
         if int(number) == int(userInput):
             robot.say_text("That's right!").wait_for_completed()
 
@@ -217,14 +176,15 @@ def cozmo_program(robot: cozmo.robot.Robot):
             #let user know how many guesses they have left
             guessesLeft = 3-guess
             if guessesLeft == 0:
+                robot.say_text("Game Over").wait_for_completed()
                 guess = 4 #equals 4 to exit while loop
                 duration_s = 2.0
                 time.sleep(duration_s)
                 break
-
-            robot.say_text("test").wait_for_completed()
-            robot.say_text("Oops! You have " + str(guessesLeft) + " more tries. Try another number ").wait_for_completed()
-            print("Oops! You have " + str(guessesLeft) + " more tries. Try another number ")
+            elif guessesLeft == 1:
+                robot.say_text("This is your last try! Make it count!").wait_for_completed()
+            else:
+                robot.say_text("Sorry that's wrong! You have " + str(guessesLeft) + " more tries. Try another number ").wait_for_completed()
             userInput = input()
 
 cozmo.robot.Robot.drive_off_charger_on_connect = False
