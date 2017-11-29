@@ -73,13 +73,12 @@ def cozmo_program(robot: cozmo.robot.Robot):
     else:
         cozmo.logger.warning("Cozmo is not connected to a LightCube3Id cube - check the battery.")
 
-    #get a random number from 1-5
+    #get a random number from 1-10
     from random import randint
-    number = randint(1, 5)
-    print(number)
+    number = randint(1, 10)
 
     #ask the user to try to guess the random number
-    robot.say_text("Number").wait_for_completed()
+    robot.say_text("Hmm...I'm thinking of a number from 1 to 10 can you guess it?").wait_for_completed()
     userInput = input()
 
     #give user three tries to get the answer correct
@@ -176,7 +175,7 @@ def cozmo_program(robot: cozmo.robot.Robot):
             #let user know how many guesses they have left
             guessesLeft = 3-guess
             if guessesLeft == 0:
-                robot.say_text("Game Over").wait_for_completed()
+                robot.say_text("Game Over. Sorry.").wait_for_completed()
                 guess = 4 #equals 4 to exit while loop
                 duration_s = 2.0
                 time.sleep(duration_s)
